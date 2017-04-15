@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smeyun.payment.wechatpay">
+	<resultMap type="com.smeyun.payment.wechatpay.entity.PayRequestData" id="requestResult">
+		<result column="ID" property="id" javaType="long" />
+		<result column="TRADE_NO" property="orderCode" javaType="string" />
+		<result column="CLIENT_TYPE" property="clientType" javaType="integer" />
+		<result column="PRODUCT_IDS" property="productIds" javaType="string" />
+		<result column="TOTAL_FEE" property="totalFee" javaType="string" />
+		<result column="NOTIFY_URL" property="notifyUrl" javaType="string" />
+		<result column="RANDOM_STRING" property="randomStr" javaType="string" />
+		<result column="RECEIVE_TIME" property="time" javaType="date" />
+	</resultMap>
+	
+	<!-- 支付记录 -->
+	<insert id="insertRequestData" parameterType="com.smeyun.payment.wechatpay.entity.PayRequestData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO TBL_WECHATPAY_REV_MSG (TRADE_NO, CLIENT_TYPE, PRODUCT_IDS, TOTAL_FEE,
+		NOTIFY_URL, RANDOM_STRING, RECEIVE_TIME)
+		VALUES (#{orderCode, jdbcType=VARCHAR}, #{clientType, jdbcType=INTEGER},
+		#{productIds, jdbcType=VARCHAR}, #{totalFee, jdbcType=VARCHAR},
+		#{notifyUrl, jdbcType=VARCHAR}, #{randomStr, jdbcType=VARCHAR},
+		#{time, jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 根据订单编码查询支付记录 -->
+	<select id="queryRequestDataByOrderCode" resultMap="requestResult">
+		SELECT ID, TRADE_NO, CLIENT_TYPE, PRODUCT_IDS, TOTAL_FEE, NOTIFY_URL, RANDOM_STRING, RECEIVE_TIME
+		FROM TBL_WECHATPAY_REV_MSG
+		WHERE TRADE_NO = #{orderCode} ORDER BY RECEIVE_TIME ASC
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryRequestDataById" resultMap="requestResult">
+		SELECT ID, TRADE_NO, CLIENT_TYPE, PRODUCT_IDS, TOTAL_FEE, NOTIFY_URL, RANDOM_STRING, RECEIVE_TIME
+		FROM TBL_WECHATPAY_REV_MSG
+		WHERE ID = #{id}
+	</select>
+
+</mapper>

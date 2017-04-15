@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smeyun.payment.alipay">
+	<resultMap type="com.smeyun.payment.alipay.entity.PayNotifyData" id="notifyResult">
+		<result column="ID" property="id" javaType="long" />
+		<result column="REQ_ID" property="reqId" javaType="long" />
+		<result column="TRADE_NO" property="orderCode" javaType="string" />
+		<result column="TOTAL_FEE" property="totalFee" javaType="string" />
+		<result column="ALI_TRADE_NO" property="aliTradeNo" javaType="string" />
+		<result column="NOTIFY_ID" property="notifyId" javaType="string" />
+		<result column="DISCOUNT" property="discount" javaType="string" />
+		<result column="TRADE_STATUS" property="tradeStatus" javaType="string" />
+		<result column="NOTIFY_TIME" property="notifyTime" javaType="string" />
+		<result column="PAY_TIME" property="payTime" javaType="string" />
+		<result column="RECEIVE_TIME" property="receiveTime" javaType="date" />
+		<result column="PAY_STATUS" property="payStatus" javaType="boolean" />
+	</resultMap>
+	
+	<!-- 支付记录 -->
+	<insert id="insertNotifyData" parameterType="com.smeyun.payment.alipay.entity.PayNotifyData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO TBL_ALIPAY_NOTIFY_MSG (REQ_ID, TRADE_NO, TOTAL_FEE, ALI_TRADE_NO, NOTIFY_ID,
+		DISCOUNT, TRADE_STATUS, NOTIFY_TIME, PAY_TIME, RECEIVE_TIME, PAY_STATUS)
+		VALUES (#{reqId, jdbcType=BIGINT}, #{orderCode, jdbcType=VARCHAR},
+		#{totalFee, jdbcType=VARCHAR}, #{aliTradeNo, jdbcType=VARCHAR},
+		#{notifyId, jdbcType=VARCHAR}, #{discount, jdbcType=VARCHAR},
+		#{tradeStatus, jdbcType=VARCHAR}, #{notifyTime, jdbcType=VARCHAR},
+		#{payTime, jdbcType=VARCHAR}, #{receiveTime, jdbcType=TIMESTAMP},
+		#{payStatus, jdbcType=BOOLEAN})
+	</insert>
+
+	<!-- 根据订单编码查询支付记录 -->
+	<select id="queryNotifyDataByOrderCode" resultMap="notifyResult">
+		SELECT ID, REQ_ID, TRADE_NO, TOTAL_FEE, ALI_TRADE_NO, NOTIFY_ID,
+		    DISCOUNT, TRADE_STATUS, NOTIFY_TIME, PAY_TIME, RECEIVE_TIME, PAY_STATUS
+		FROM TBL_ALIPAY_NOTIFY_MSG
+		WHERE TRADE_NO = #{orderCode} ORDER BY RECEIVE_TIME ASC
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryNotifyDataById" resultMap="notifyResult">
+		SELECT ID, REQ_ID, TRADE_NO, TOTAL_FEE, ALI_TRADE_NO, NOTIFY_ID,
+		    DISCOUNT, TRADE_STATUS, NOTIFY_TIME, PAY_TIME, RECEIVE_TIME, PAY_STATUS
+		FROM TBL_ALIPAY_NOTIFY_MSG
+		WHERE ID = #{id}
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryNotifyDataByReqId" resultMap="notifyResult">
+		SELECT ID, REQ_ID, TRADE_NO, TOTAL_FEE, ALI_TRADE_NO, NOTIFY_ID,
+		    DISCOUNT, TRADE_STATUS, NOTIFY_TIME, PAY_TIME, RECEIVE_TIME, PAY_STATUS
+		FROM TBL_ALIPAY_NOTIFY_MSG
+		WHERE REQ_ID = #{reqId}
+	</select>
+	
+	<!-- 更新记录 -->
+	<update id="updateNotifyData" parameterType="com.smeyun.payment.alipay.entity.PayNotifyData">
+	    UPDATE TBL_ALIPAY_NOTIFY_MSG SET TRADE_STATUS = #{tradeStatus}, PAY_STATUS = #{payStatus},
+	        RECEIVE_TIME = #{receiveTime, jdbcType=TIMESTAMP}
+		WHERE ID = #{id}
+	</update>
+
+</mapper>

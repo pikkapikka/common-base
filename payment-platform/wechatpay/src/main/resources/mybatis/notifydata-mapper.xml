@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smeyun.payment.wechatpay">
+	<resultMap type="com.smeyun.payment.wechatpay.entity.PayNotifyData" id="notifyResult">
+		<result column="ID" property="id" javaType="long" />
+		<result column="REQ_ID" property="reqId" javaType="long" />
+		<result column="TRADE_NO" property="orderCode" javaType="string" />
+		<result column="TOTAL_PAY" property="totalPay" javaType="string" />
+		<result column="WECHAT_TRADE_NO" property="wechatTradeNo" javaType="string" />
+		<result column="TRADE_TYPE" property="tradeType" javaType="string" />
+		<result column="ERROR_CODE" property="errorCode" javaType="string" />
+		<result column="TRADE_RESULT" property="tradeRet" javaType="string" />
+		<result column="COMPLETE_TIME" property="completeTime" javaType="string" />
+		<result column="RECEIVE_TIME" property="receiveTime" javaType="date" />
+		<result column="PAY_STATUS" property="payStatus" javaType="boolean" />
+	</resultMap>
+	
+	<!-- 支付记录 -->
+	<insert id="insertNotifyData" parameterType="com.smeyun.payment.wechatpay.entity.PayNotifyData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO TBL_WECHATPAY_NOTIFY_MSG (REQ_ID, TRADE_NO, TOTAL_PAY, WECHAT_TRADE_NO, TRADE_TYPE,
+		ERROR_CODE, TRADE_RESULT, COMPLETE_TIME, RECEIVE_TIME, PAY_STATUS)
+		VALUES (#{reqId, jdbcType=BIGINT}, #{orderCode, jdbcType=VARCHAR},
+		#{totalPay, jdbcType=VARCHAR}, #{wechatTradeNo, jdbcType=VARCHAR},
+		#{tradeType, jdbcType=VARCHAR}, #{errorCode, jdbcType=VARCHAR},
+		#{tradeRet, jdbcType=VARCHAR}, #{completeTime, jdbcType=VARCHAR},
+		#{receiveTime, jdbcType=TIMESTAMP}, #{payStatus, jdbcType=BOOLEAN}
+		)
+	</insert>
+
+	<!-- 根据订单编码查询支付记录 -->
+	<select id="queryNotifyDataByOrderCode" resultMap="notifyResult">
+		SELECT ID, REQ_ID, TRADE_NO, TOTAL_PAY, WECHAT_TRADE_NO, TRADE_TYPE,
+		    ERROR_CODE, TRADE_RESULT, COMPLETE_TIME, RECEIVE_TIME, PAY_STATUS
+		FROM TBL_WECHATPAY_NOTIFY_MSG
+		WHERE TRADE_NO = #{orderCode} ORDER BY RECEIVE_TIME ASC
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryNotifyDataById" resultMap="notifyResult">
+		SELECT ID, REQ_ID, TRADE_NO, TOTAL_PAY, WECHAT_TRADE_NO, TRADE_TYPE,
+		    ERROR_CODE, TRADE_RESULT, COMPLETE_TIME, RECEIVE_TIME, PAY_STATUS
+		FROM TBL_WECHATPAY_NOTIFY_MSG
+		WHERE ID = #{id}
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryNotifyDataByReqId" resultMap="notifyResult">
+		SELECT ID, REQ_ID, TRADE_NO, TOTAL_PAY, WECHAT_TRADE_NO, TRADE_TYPE,
+		    ERROR_CODE, TRADE_RESULT, COMPLETE_TIME, RECEIVE_TIME, PAY_STATUS
+		FROM TBL_WECHATPAY_NOTIFY_MSG
+		WHERE REQ_ID = #{reqId}
+	</select>
+	
+	<!-- 更新记录 -->
+	<update id="updateNotifyData" parameterType="com.smeyun.payment.wechatpay.entity.PayNotifyData">
+	    UPDATE TBL_WECHATPAY_NOTIFY_MSG SET TRADE_RESULT = #{tradeRet}, ERROR_CODE= #{errorCode}, PAY_STATUS = #{payStatus},
+	        RECEIVE_TIME = #{receiveTime, jdbcType=TIMESTAMP}
+		WHERE ID = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smeyun.payment.unionpay">
+	<resultMap type="com.smeyun.payment.unionpay.entity.PayRequestData" id="requestResult">
+		<result column="ID" property="id" javaType="long" />
+		<result column="ORDER_CODE" property="orderCode" javaType="string" />
+		<result column="CLIENT_TYPE" property="clientType" javaType="integer" />
+		<result column="BIZ_TYPE" property="bizType" javaType="integer" />
+		<result column="TXN_AMOUNT" property="txnAmount" javaType="Long" />
+		<result column="NOTIFY_URL" property="notifyUrl" javaType="string" />
+		<result column="RETURN_URL" property="returnUrl" javaType="string" />
+		<result column="PAY_TIME" property="payTime" javaType="date" />
+	</resultMap>
+	
+	<!-- 支付记录 -->
+	<insert id="insertRequestData" parameterType="com.smeyun.payment.unionpay.entity.PayRequestData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tbl_unionpay_rev (ORDER_CODE, CLIENT_TYPE, BIZ_TYPE, TXN_AMOUNT,
+		NOTIFY_URL, RETURN_URL, PAY_TIME)
+		VALUES (#{orderCode, jdbcType=VARCHAR}, #{clientType, jdbcType=INTEGER},
+		#{bizType, jdbcType=INTEGER}, #{txnAmount, jdbcType=BIGINT},
+		#{notifyUrl, jdbcType=VARCHAR}, #{returnUrl, jdbcType=VARCHAR},
+		#{payTime, jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 根据订单编码查询支付记录 -->
+	<select id="queryRequestDataByOrderCode" resultMap="requestResult">
+		SELECT ID, TRADE_NO, CLIENT_TYPE, QUANTITY, PRICE, NOTIFY_URL, RETURN_URL, PAY_TIME
+		FROM tbl_unionpay_rev
+		WHERE TRADE_NO = #{orderCode} ORDER BY PAY_TIME ASC
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryRequestDataById" resultMap="requestResult">
+		SELECT ID, ORDER_CODE, CLIENT_TYPE, BIZ_TYPE, TXN_AMOUNT, NOTIFY_URL, RETURN_URL, PAY_TIME
+		FROM tbl_unionpay_rev
+		WHERE ID = #{id}
+	</select>
+
+</mapper>

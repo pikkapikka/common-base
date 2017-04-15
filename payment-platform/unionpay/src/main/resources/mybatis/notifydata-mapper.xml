@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smeyun.payment.unionpay">
+	<resultMap type="com.smeyun.payment.unionpay.entity.PayNotifyData" id="notifyResult">
+		<result column="ID" property="id" javaType="long" />
+		<result column="REQ_ID" property="reqId" javaType="long" />
+		<result column="TXN_AMOUNT" property="txnAmount" javaType="long" />
+		<result column="QUERY_ID" property="queryId" javaType="string" />
+		<result column="RESP_CODE" property="resCode" javaType="string" />
+		<result column="RESP_MSG" property="resMsg" javaType="string" />
+		<result column="TXN_TIME" property="txnTime" javaType="date" />
+		<result column="REV_TIME" property="revTime" javaType="date" />
+		<result column="ORDER_CODE" property="orderCode" javaType="string" />
+		<result column="SETTLE_AMOUNT" property="settleAmount" javaType="long" />
+		<result column="SETTLE_DATE" property="settleDate" javaType="date" />
+		<result column="VERSION" property="version" javaType="long" />
+	</resultMap>
+	
+	<!-- 支付记录 -->
+	<insert id="insertNotifyData" parameterType="com.smeyun.payment.unionpay.entity.PayNotifyData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO tbl_unionpay_notify (REQ_ID, TXN_AMOUNT, QUERY_ID, RESP_CODE,
+		 RESP_MSG, TXN_TIME, REV_TIME, ORDER_CODE,VERSION)
+		VALUES (#{reqId, jdbcType=BIGINT}, #{txnAmount, jdbcType=BIGINT},
+		#{queryId, jdbcType=VARCHAR}, #{resCode, jdbcType=VARCHAR},
+		#{resMsg, jdbcType=VARCHAR},	#{txnTime, jdbcType=TIMESTAMP},
+		#{revTime, jdbcType=TIMESTAMP}, #{orderCode, jdbcType=VARCHAR},
+		#{version, jdbcType=TIMESTAMP})
+	</insert>
+
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryNotifyDataById" resultMap="notifyResult">
+		SELECT * 
+		FROM tbl_unionpay_notify
+		WHERE ID = #{id}
+	</select>
+	
+	<!-- 根据记录ID查询支付记录 -->
+	<select id="queryNotifyDataByReqId" resultMap="notifyResult">
+		SELECT ID,REQ_ID,TXN_AMOUNT,QUERY_ID,RESP_CODE,RESP_MSG,TXN_TIME,REV_TIME,ORDER_CODE,VERSION
+		FROM tbl_unionpay_notify
+		WHERE REQ_ID = #{reqId}
+	</select>
+	
+	<!-- 更新记录 -->
+	<update id="updateNotifyData" parameterType="com.smeyun.payment.unionpay.entity.PayNotifyData">
+	    UPDATE tbl_unionpay_notify SET RESP_CODE = #{resCode}, RESP_MSG = #{resMsg},
+	        SETTLE_AMOUNT = #{settleAmount},SETTLE_DATE = #{settleDate}, VERSION = UNIX_TIMESTAMP(NOW())
+		WHERE ID = #{id} AND  VERSION = #{version}
+	</update>
+
+</mapper>
